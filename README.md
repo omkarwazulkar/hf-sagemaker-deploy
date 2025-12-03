@@ -4,9 +4,9 @@ This repository demonstrates an end-to-end workflow for training, optimizing, de
 
 ### The workflow includes:
 
-1. Training and fine-tuning a pre-trained Hugging Face model on IMDb data.
-2. Packaging and deploying the trained model as a Docker image in SageMaker for inference.
-3. Cleaning up resources post-deployment.
+- Training and fine-tuning a pre-trained Hugging Face model on IMDb data.
+- Packaging and deploying the trained model as a Docker image in SageMaker for inference.
+- Cleaning up resources post-deployment.
 
 ## Step 1: Train and Optimize the Model
 
@@ -34,12 +34,12 @@ This notebook demonstrates how to package the trained model for deployment in Sa
 
 ### **Workflow Steps:**
 
-1. Package the trained model into a tarball and upload it to Amazon S3.
-2. Build the Docker image using the Dockerfile, dependencies, and inference script.
-3. Push the Docker image to Amazon Elastic Container Registry (ECR).
-4. Define and deploy the SageMaker model using the ECR image and S3 model artifact.
-5. Create a SageMaker endpoint and run inference using the Predictor API.
-6. Clean up by deleting the SageMaker endpoint, endpoint configuration, and model.
+- Package the trained model into a tarball and upload it to Amazon S3.
+- Build the Docker image using the Dockerfile, dependencies, and inference script.
+- Push the Docker image to Amazon Elastic Container Registry (ECR).
+- Define and deploy the SageMaker model using the ECR image and S3 model artifact.
+- Create a SageMaker endpoint and run inference using the Predictor API.
+- Clean up by deleting the SageMaker endpoint, endpoint configuration, and model.
 
 ## Step 3: Cleanup
 
