@@ -1,17 +1,69 @@
 version: 0.2
 
+env:
+  variables:
+    HF_MODEL_ID: "omkarwazulkar/SentimentModel-V1.0"
+    S3_BUCKET: "648758970526-us-east-1-models"
+    MODEL_TAR: "model.tar.gz"
+    ECR_REPO: "my-hf-model-ecr"
+    AWS_REGION: "us-east-1"
+
 phases:
   install:
-    runtime-versions:
-      python: 3.9
     commands:
-      - echo Installing dependencies...
-      - pip install -r requirements.txt
+      - echo "Installing system dependencies..."
+      - apt-get update
+      - apt-get install -y git
+
+      - echo "Installing Python dependencies..."
+      - pip install --upgrade pip
+      - pip install transformers torch boto3
+
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      
+      - echo "Creating ECR repository if it does not exist..."
+      - aws ecr describe-repositories --repository-names $ECR_REPO --region $AWS_REGION || aws ecr create-repository --repository-name $ECR_REPO --region $AWS_REGION
+
+      - echo "Downloading HuggingFace model: $HF_MODEL_ID"
+      - mkdir -p model
+      - python - <<EOF
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+model_id = "$HF_MODEL_ID"
+
+print("Downloading tokenizer...")
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+tokenizer.save_pretrained("model")
+
+print("Downloading model...")
+model = AutoModelForSequenceClassification.from_pretrained(model_id)
+model.save_pretrained("model")
+
+print("Model saved.")
+EOF
+
+      - echo "Packaging model into model.tar.gz..."
+      - tar -czvf $MODEL_TAR -C model .
+
+      - echo "Uploading model.tar.gz to S3..."
+      - aws s3 cp $MODEL_TAR s3://$S3_BUCKET/$MODEL_TAR
+
+      - echo "S3 Upload Complete."
+
   build:
     commands:
-      - echo Running HF model download and S3 upload script...
-      - python hf_to_s3.py
+      - echo "Building Docker image..."
+      - docker build -t $ECR_REPO .
 
-artifacts:
-  files:
-    - '**/*'
+      - echo "Tagging Docker image..."
+      - docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:latest
+
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR..."
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:latest
+
+      - echo "Build completed successfully."
