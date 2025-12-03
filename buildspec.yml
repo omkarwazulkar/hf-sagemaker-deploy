@@ -23,13 +23,17 @@ phases:
     commands:
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-      
+
       - echo "Creating ECR repository if it does not exist..."
-      - aws ecr describe-repositories --repository-names $ECR_REPO --region $AWS_REGION || aws ecr create-repository --repository-name $ECR_REPO --region $AWS_REGION
+      - |
+        if ! aws ecr describe-repositories --repository-names $ECR_REPO --region $AWS_REGION > /dev/null 2>&1; then
+          aws ecr create-repository --repository-name $ECR_REPO --region $AWS_REGION
+        fi
 
       - echo "Downloading HuggingFace model: $HF_MODEL_ID"
       - mkdir -p model
-      - python - <<EOF
+      - |
+        python - <<EOF
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 model_id = "$HF_MODEL_ID"
@@ -50,8 +54,6 @@ EOF
 
       - echo "Uploading model.tar.gz to S3..."
       - aws s3 cp $MODEL_TAR s3://$S3_BUCKET/$MODEL_TAR
-
-      - echo "S3 Upload Complete."
 
   build:
     commands:
