@@ -33,9 +33,13 @@ def input_fn(request_body, request_content_type="application/json"):
 
 
 def predict_fn(input_text, model_dict):
-    """Make prediction and return label index."""
+    """Make prediction and return label(s)."""
     tokenizer = model_dict["tokenizer"]
     model = model_dict["model"]
+
+    # Ensure input is always a list
+    if isinstance(input_text, str):
+        input_text = [input_text]
 
     inputs = tokenizer(
         input_text,
@@ -49,12 +53,13 @@ def predict_fn(input_text, model_dict):
         outputs = model(**inputs)
         preds = torch.argmax(outputs.logits, dim=1)
 
-    return int(preds.item())
+    # Convert tensor to a Python list of ints
+    return preds.tolist()
 
 
 def output_fn(prediction, accept="application/json"):
     """Format output JSON."""
-    response = {"prediction": prediction}
+    response = {"predictions": prediction}  # plural key
     return json.dumps(response), accept
 
 
