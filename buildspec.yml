@@ -27,11 +27,11 @@ phases:
         fi
       - echo "Model tar already exists in S3 at s3://$S3_BUCKET/$MODEL_TAR"
 
-  # build:
-  #   commands:
-  #     - echo "Building Docker image..."
-  #     - docker build -t $ECR_REPO .
-  #     - docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:latest
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t $ECR_REPO .
+      - docker tag $ECR_REPO:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO:latest
 
   # post_build:
   #   commands:
