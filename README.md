@@ -3,7 +3,7 @@
 This repository demonstrates an end-to-end workflow for training, optimizing, deploying, and running inference on a sentiment classification model using Hugging Face Transformers, PyTorch, ONNX optimization, and Amazon SageMaker.
 
 The workflow includes:
-	1.	Training and fine-tuning a pre-trained Hugging Face model on IMDb data.
+	1.	Training and fine-tuning a pre-trained Hugging Face model on IMDb data.//
 	2.	Packaging and deploying the trained model as a Docker image in SageMaker for inference.
 	3.	Cleaning up resources post-deployment.
 
