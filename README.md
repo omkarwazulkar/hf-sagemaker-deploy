@@ -8,20 +8,16 @@ This repository demonstrates an end-to-end workflow for training, optimizing, de
 2. Packaging and deploying the trained model as a Docker image in SageMaker for inference.
 3. Cleaning up resources post-deployment.
 
-## **Step 1: Train and Optimize the Model**
+## Step 1: Train and Optimize the Model
 
-Notebook: IMDB_DataClassification_BERT_HF_Train_Push_Inference.ipynb
+**Notebook:** `IMDB_DataClassification_BERT_HF_Train_Push_Inference.ipynb`
 
-	•	Fetches a pre-trained Hugging Face model for sentiment classification.
-	
-	•	Fine-tunes the model on IMDb dataset for binary sentiment classification.
-	
-	•	Performs optimizations:
-	
-		•	Quantization to reduce model size and improve inference speed.
-		•	ONNX export for further model optimization and deployment flexibility.
-		
-	•	Pushes the trained model to Hugging Face Hub for version control and reuse.
+- Fetches a pre-trained Hugging Face model for sentiment classification.
+- Fine-tunes the model on IMDb dataset for binary sentiment classification.
+- Performs optimizations:
+    - Quantization to reduce model size and improve inference speed.
+    - ONNX export for further model optimization and deployment flexibility.
+- Pushes the trained model to Hugging Face Hub for version control and reuse.
 
 ## **Step 2: Prepare and Deploy the Model in SageMaker**
 
